@@ -11,8 +11,8 @@ ARG DS_USER="dsuser"
 ARG DS_HOME="/home/${DS_USER}"
 
 RUN set -eux \
-    && DEBIAN_FRONTEND=noninteractive apt --yes update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
+    && DEBIAN_FRONTEND=noninteractive apt --yes -qq update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends -qq \
         curl \
         default-jre \
     # CREATE USER
@@ -21,9 +21,9 @@ RUN set -eux \
         --home-dir ${DS_HOME} \        
         ${DS_USER} \
     # CLEAN INSTALLATION
-    && DEBIAN_FRONTEND=noninteractive apt-get autoremove --yes \
-    && DEBIAN_FRONTEND=noninteractive apt-get clean \
-    && rm -frv /var/lib/apt/lists/* \
+    && DEBIAN_FRONTEND=noninteractive apt-get autoremove --yes -qq \
+    && DEBIAN_FRONTEND=noninteractive apt-get -qq clean \
+    && rm -fr /var/lib/apt/lists/* \
         /tmp/* \
         /var/tmp/* \ 
         ~/.cache 
@@ -45,8 +45,8 @@ ENV GCLOUD_STORE_ON_DISK=false
 
 RUN <<EOT bash
     set -eux
-    curl -o ${DS_HOME}/${GCLOUD_FILE} https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${GCLOUD_FILE} 
-    tar -xvf ${DS_HOME}/${GCLOUD_FILE} -C ${DS_HOME}/ 
+    curl -sS -o ${DS_HOME}/${GCLOUD_FILE} https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${GCLOUD_FILE} 
+    tar -xf ${DS_HOME}/${GCLOUD_FILE} -C ${DS_HOME}/ 
     rm -v ${DS_HOME}/${GCLOUD_FILE}
     ${GCLOUD_DIR}/install.sh \
         --quiet \
